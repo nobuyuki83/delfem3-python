@@ -1,0 +1,3 @@
+[submodule "external/delfem3"]
+	path = external/delfem3
+	url = https://github.com/nobuyuki83/delfem3.git

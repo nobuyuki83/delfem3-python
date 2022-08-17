@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
+    - name: download delfem3
+      run: |
+        git submodule update --init external/delfem3
+
     - uses: messense/maturin-action@v1
       with:
         manylinux: auto
