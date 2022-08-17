@@ -12,15 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/checkout@v3
-      with: 
-        repository: nobuyuki83/delfem3
-        path: ..
-    - name: hoge
-      run: |
-        cd .. 
-        ls -al
-
     - uses: messense/maturin-action@v1
       with:
         manylinux: auto
