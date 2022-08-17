@@ -28,7 +28,7 @@ jobs:
       with:
         manylinux: auto
         command: build
-        args: --release --sdist -o dist --find-interpreter
+        args: --release --sdist -o dist -m Cargo.toml --bindings=pyo3
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
