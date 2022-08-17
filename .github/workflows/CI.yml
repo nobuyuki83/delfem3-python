@@ -19,7 +19,7 @@ jobs:
       with:
         manylinux: auto
         command: build
-        args: --release --sdist -o dist --find-interpreter --cargo-extra-args="--features python-extension"
+        args: --release --sdist -o dist --find-interpreter --features python-extension
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
@@ -36,7 +36,7 @@ jobs:
     - uses: messense/maturin-action@v1
       with:
         command: build
-        args: --release -o dist --find-interpreter --cargo-extra-args="--features python-extension"
+        args: --release -o dist --find-interpreter --features python-extension
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
@@ -53,7 +53,7 @@ jobs:
     - uses: messense/maturin-action@v1
       with:
         command: build
-        args: --release -o dist --universal2 --find-interpreter --cargo-extra-args="--features python-extension"
+        args: --release -o dist --universal2 --find-interpreter --features python-extension
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
