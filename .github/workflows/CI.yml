@@ -25,10 +25,10 @@ jobs:
         toolchain: stable
         override: true        
 
-    - name: build_examples (alembic)
+    - name: build with maturin
       run: |
         pip3 install maturin
-        maturin build -o dist 
+        maturin build -o dist --bindings pyo3
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
