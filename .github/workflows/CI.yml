@@ -24,11 +24,11 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true        
-    - uses: messense/maturin-action@v1
-      with:
-        manylinux: auto
-        command: build
-        args: --release --sdist -o dist -m Cargo.toml --bindings=pyo3
+
+    - name: build_examples (alembic)
+      run: |
+        pip3 install maturin
+        maturin build -o dist 
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
