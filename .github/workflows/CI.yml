@@ -12,16 +12,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
+    - name: Install Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+        architecture: x64
+
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        default: true
+
     - name: download delfem3
       run: |
         git submodule update --init external/delfem3
 
-    - uses: messense/maturin-action@v1
-      with:
-        manylinux: auto
-        command: build
-        args: --release --sdist -o dist --find-interpreter
+    - name: Run maturin
+      run: |
+        pip3 install maturin
+        maturin build --release --sdist -o dist --find-interpreter
+
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
