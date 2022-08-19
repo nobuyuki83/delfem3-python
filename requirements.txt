@@ -2,7 +2,11 @@ glcontext==2.3.6
 maturin==0.13.2
 moderngl==5.6.4
 numpy==1.23.1
+Pillow==9.2.0
+pydelfem3 @ file:///var/folders/zs/dzkvbbhs3qbgl1y3ytdtmb340000gn/T/.tmpS8pwMY/pydelfem3-0.1.0-cp39-cp39-macosx_10_7_x86_64.whl
 PyQt5==5.15.7
 PyQt5-Qt5==5.15.2
 PyQt5-sip==12.11.0
+pyrr==0.10.3
+six==1.16.0
 tomli==2.0.1

@@ -1,0 +1,70 @@
+import moderngl
+import pyrr
+from PyQt5 import QtOpenGL, QtWidgets, QtCore
+from pydelfem3.drawer_meshposcolor import DrawerMesPosColor
+import numpy
+
+class MyQtGLWidget(QtOpenGL.QGLWidget):
+
+    def __init__(self, drawer, parent=None):
+        self.parent = parent
+        fmt = QtOpenGL.QGLFormat()
+        fmt.setVersion(3, 3)
+        fmt.setProfile(QtOpenGL.QGLFormat.CoreProfile)
+        fmt.setSampleBuffers(True)
+        super(MyQtGLWidget, self).__init__(fmt, None)
+        #
+        self.resize(640, 480)
+        self.setWindowTitle('Mesh Viewer')
+        self.drawer = drawer
+        #
+        timer = QtCore.QTimer(self)
+        timer.setInterval(20)  # period, in milliseconds
+        timer.timeout.connect(self.updateGL)
+        timer.start()
+
+    def initializeGL(self):
+        self.ctx = moderngl.create_context()
+        self.drawer.init_gl(self.ctx)
+
+    def paintGL(self):
+        self.ctx.clear(1.0, 0.8, 1.0)
+        self.ctx.enable(moderngl.DEPTH_TEST)
+        mvp = pyrr.Matrix44.identity()
+        self.drawer.paint_gl(mvp)
+
+    def resizeGL(self, width, height):
+        width = max(2, width)
+        height = max(2, height)
+        self.ctx.viewport = (0, 0, width, height)
+
+    def mousePressEvent(self, event):
+        if event.buttons() & QtCore.Qt.LeftButton:
+            pass
+
+    def mouseReleaseEvent(self, event):
+        if event.buttons() & QtCore.Qt.LeftButton:
+            pass
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & QtCore.Qt.LeftButton:
+            pass
+
+
+if __name__ == '__main__':
+    V = numpy.array([
+        [-0.5, -0.5, 0],
+        [+0.5, -0.5, 0],
+        [+0, +0.5, 0]], dtype=numpy.float32)
+    C = numpy.array([
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]], dtype=numpy.float32)
+    F = numpy.array([
+        [0, 1, 2]], dtype=numpy.uint32)
+
+    with QtWidgets.QApplication([]) as app:
+        drawer = DrawerMesPosColor(V=V.tobytes(), C=C.tobytes(), F=F.tobytes())
+        win = MyQtGLWidget(drawer)
+        win.show()
+        app.exec()
