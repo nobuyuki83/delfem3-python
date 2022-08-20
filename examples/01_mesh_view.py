@@ -1,7 +1,7 @@
 import moderngl
 import pyrr
 from PyQt5 import QtOpenGL, QtWidgets, QtCore
-from pydelfem3.drawer_meshposcolor import DrawerMesPosColor
+from pydelfem3.drawer_meshpos import DrawerMesPos, ElementInfo
 import numpy
 
 class MyQtGLWidget(QtOpenGL.QGLWidget):
@@ -33,21 +33,25 @@ class MyQtGLWidget(QtOpenGL.QGLWidget):
         height = max(2, height)
         self.ctx.viewport = (0, 0, width, height)
 
-
 if __name__ == '__main__':
     V = numpy.array([
         [-0.5, -0.5, 0],
         [+0.5, -0.5, 0],
         [+0, +0.5, 0]], dtype=numpy.float32)
-    C = numpy.array([
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1]], dtype=numpy.float32)
     F = numpy.array([
         [0, 1, 2]], dtype=numpy.uint32)
+    E = numpy.array([
+        [0,1],
+        [1,2],
+        [2,0]], dtype=numpy.uint32)
 
     with QtWidgets.QApplication([]) as app:
-        drawer = DrawerMesPosColor(V=V.tobytes(), C=C.tobytes(), F=F.tobytes())
+        drawer = DrawerMesPos(
+            V=V,
+            element=[
+                ElementInfo(index=F, color=(1,0,0), mode=moderngl.TRIANGLES),
+                ElementInfo(index=E, color=(0,0,0), mode=moderngl.LINES)]
+        )
         win = MyQtGLWidget(drawer)
         win.show()
         app.exec()
