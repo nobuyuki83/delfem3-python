@@ -1,2 +1,2 @@
 
-from .pydelfem3 import *
+from .pydelfem3 import*

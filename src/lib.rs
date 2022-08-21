@@ -9,19 +9,6 @@ use delfem3;
 fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m)]
-    fn sum_as_string(_py: Python, a:i64, b:i64) -> PyResult<String> {
-        Ok(format!("{}", a + b))
-    }
-
-    // wrapper of `mult`
-    #[pyfn(m)]
-    #[pyo3(name = "mult")]
-    fn mult_py(_py: Python<'_>, a: f64, x: &PyArrayDyn<f64>) {
-        let mut x = unsafe { x.as_array_mut() };
-        x *= a;
-    }
-
-    #[pyfn(m)]
     fn edges<'a>(
         py: Python<'a>,
         elems: PyReadonlyArrayDyn<'a, usize>,
@@ -83,8 +70,6 @@ fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
             (tri_vtx.len()/3,3), tri_vtx).unwrap();
         (v.into_pyarray(py), f.into_pyarray(py))
     }
-
-
 
     Ok(())
 }

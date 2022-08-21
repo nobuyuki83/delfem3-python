@@ -1,6 +1,7 @@
+import typing
 from pyrr import Matrix44
 import numpy
-import typing
+import moderngl
 
 class ElementInfo:
 
@@ -16,7 +17,7 @@ class DrawerMesPos:
         self.V = V
         self.element = element
 
-    def init_gl(self, ctx):
+    def init_gl(self, ctx: moderngl.Context):
         self.prog = ctx.program(
             vertex_shader='''
                 #version 330
