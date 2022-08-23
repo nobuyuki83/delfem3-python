@@ -9,7 +9,7 @@ class ViewNavigation3:
         self.depth_ratio = 10.
         #
         self.translation = Vector3((0., 0., 0.), dtype=numpy.float64)
-        self.quat = Quaternion((1., 0., 0., 0.), dtype=numpy.float64)
+        self.quat = Quaternion((0., 0., 0., 1.), dtype=numpy.float64)
         #
         self.cursor_x = 0.
         self.cursor_y = 0.
@@ -49,7 +49,7 @@ class ViewNavigation3:
         a = math.sqrt(dx * dx + dy * dy)
         if a == 0.0:
             return
-        dq = Quaternion.from_axis((-dy, dx, 0.))
+        dq = Quaternion.from_axis((dy, -dx, 0.))
         dq.normalize()
         self.quat = self.quat * dq
 

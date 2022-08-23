@@ -8,7 +8,7 @@ import pydelfem3
 
 
 def draw_mesh(V,F):
-    E = pydelfem3.edges(F, V.shape[0])
+    E = pydelfem3.edges_of_uniform_mesh(F, V.shape[0])
 
     with QtWidgets.QApplication([]) as app:
         drawer = DrawerMesPos(

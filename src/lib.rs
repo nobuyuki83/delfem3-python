@@ -1,5 +1,6 @@
-use numpy::ndarray::{Array2, ArrayD, ArrayViewD, ArrayViewMutD};
-use numpy::{IntoPyArray, PyArrayDyn, PyReadonlyArrayDyn, PyArray2, PyArray1};
+// use numpy::ndarray::{Array2, ArrayD, ArrayViewD, ArrayViewMutD};
+// use numpy::{IntoPyArray, PyArrayDyn, PyReadonlyArrayDyn, PyArray2, PyArray1};
+use numpy::{IntoPyArray, PyReadonlyArrayDyn, PyArray2, PyArray1};
 use pyo3::{pymodule, types::PyModule, PyResult, Python};
 use delfem3;
 
@@ -9,7 +10,7 @@ use delfem3;
 fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m)]
-    fn edges<'a>(
+    fn edges_of_uniform_mesh<'a>(
         py: Python<'a>,
         elems: PyReadonlyArrayDyn<'a, usize>,
         a: usize) -> &'a PyArray2<usize> {
@@ -24,9 +25,39 @@ fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
                 false);
             mshline = delfem3::msh_topology_uniform::mshline_psup(&psup.0, &psup.1);
         }
-        let array_edge = numpy::ndarray::Array2::from_shape_vec(
-            (mshline.len()/2,2), mshline).unwrap();
-        array_edge.into_pyarray(py)
+        numpy::ndarray::Array2::from_shape_vec(
+            (mshline.len()/2,2), mshline).unwrap().into_pyarray(py)
+    }
+
+    #[pyfn(m)]
+    fn edges_of_triquad_mesh<'a>(
+        py: Python<'a>,
+        elem_ind: PyReadonlyArrayDyn<'a, usize>,
+        elem_vtx: PyReadonlyArrayDyn<'a, usize>,
+        a: usize)  -> &'a PyArray2<usize> {
+        let mshline;
+        {
+            let elsup = delfem3::msh_topology_mix::elsup(
+                &elem_ind.as_slice().unwrap(), &elem_vtx.as_slice().unwrap(), a);
+            let psup = delfem3::msh_topology_mix::psupedge_from_meshtriquad(
+                &elem_ind.as_slice().unwrap(), &elem_vtx.as_slice().unwrap(),
+                &elsup.0, &elsup.1,
+                false);
+            mshline = delfem3::msh_topology_uniform::mshline_psup(&psup.0, &psup.1);
+        }
+        numpy::ndarray::Array2::from_shape_vec(
+            (mshline.len()/2,2), mshline).unwrap().into_pyarray(py)
+    }
+
+    #[pyfn(m)]
+    fn triangles_from_triquad_mesh<'a>(
+        py: Python<'a>,
+        elem_ind: PyReadonlyArrayDyn<'a, usize>,
+        elem_vtx: PyReadonlyArrayDyn<'a, usize>)  -> &'a PyArray2<usize> {
+        let tri_vtx = delfem3::msh_topology_mix::meshtri_from_meshtriquad(
+            &elem_ind.as_slice().unwrap(), &elem_vtx.as_slice().unwrap());
+        numpy::ndarray::Array2::from_shape_vec(
+            (tri_vtx.len()/3,3), tri_vtx).unwrap().into_pyarray(py)
     }
 
     #[pyfn(m)]
@@ -69,6 +100,20 @@ fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
         let f = numpy::ndarray::Array2::from_shape_vec(
             (tri_vtx.len()/3,3), tri_vtx).unwrap();
         (v.into_pyarray(py), f.into_pyarray(py))
+    }
+
+    #[pyfn(m)]
+    fn load_wavefront_obj(
+        py: Python,
+        fpath: String) -> (&PyArray2<f32>, &PyArray1<usize>, &PyArray1<i32>) {
+        let mut obj = delfem3::msh_io_obj::WavefrontObj::<f32>::new();
+        obj.load(fpath.as_str());
+        (
+            numpy::ndarray::Array2::from_shape_vec(
+                (obj.vtx_xyz.len()/3,3), obj.vtx_xyz).unwrap().into_pyarray(py),
+            numpy::ndarray::Array1::from_vec(obj.elem_vtx_index).into_pyarray(py),
+            numpy::ndarray::Array1::from_vec(obj.elem_vtx_xyz).into_pyarray(py)
+        )
     }
 
     Ok(())

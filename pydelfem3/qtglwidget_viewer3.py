@@ -1,5 +1,7 @@
 import math
 import moderngl
+import pyrr
+import numpy
 from PyQt5 import QtOpenGL, QtGui, QtCore
 import pydelfem3.view_navigation3
 
@@ -27,7 +29,8 @@ class QtGLWidget_Viewer3(QtOpenGL.QGLWidget):
         self.ctx.clear(1.0, 0.8, 1.0)
         proj = self.nav.projection_matrix()
         modelview = self.nav.modelview_matrix()
-        self.drawer.paint_gl(proj*modelview)
+        zinv = pyrr.Matrix44(value=(1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1),dtype=numpy.float32)
+        self.drawer.paint_gl(zinv*proj*modelview)
 
     def resizeGL(self, width, height):
         width = max(2, width)
