@@ -6,25 +6,16 @@ use delfem3;
 
 /// A Python module implemented in Rust.
 #[pymodule]
-#[pyo3(name = "pydelfem3")]
-fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
+fn pydelfem3(_py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m)]
     fn edges_of_uniform_mesh<'a>(
         py: Python<'a>,
         elems: PyReadonlyArrayDyn<'a, usize>,
-        a: usize) -> &'a PyArray2<usize> {
-        let mshline;
-        {
-            let elsup = delfem3::msh_topology_uniform::elsup(
-                &elems.as_slice().unwrap(), elems.len()/3, 3, a);
-            let psup = delfem3::msh_topology_uniform::psup_elem_edge(
-                &elems.as_slice().unwrap(), 3,
-                3, &[0,1,1,2,2,0],
-                &elsup.0, &elsup.1,
-                false);
-            mshline = delfem3::msh_topology_uniform::mshline_psup(&psup.0, &psup.1);
-        }
+        num_vtx: usize) -> &'a PyArray2<usize> {
+        let mshline = delfem3::msh_topology_uniform::mshline(
+            &elems.as_slice().unwrap(), 3,
+            &[0,1,1,2,2,0], num_vtx);
         numpy::ndarray::Array2::from_shape_vec(
             (mshline.len()/2,2), mshline).unwrap().into_pyarray(py)
     }
@@ -34,17 +25,9 @@ fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
         py: Python<'a>,
         elem_ind: PyReadonlyArrayDyn<'a, usize>,
         elem_vtx: PyReadonlyArrayDyn<'a, usize>,
-        a: usize)  -> &'a PyArray2<usize> {
-        let mshline;
-        {
-            let elsup = delfem3::msh_topology_mix::elsup(
-                &elem_ind.as_slice().unwrap(), &elem_vtx.as_slice().unwrap(), a);
-            let psup = delfem3::msh_topology_mix::psupedge_from_meshtriquad(
-                &elem_ind.as_slice().unwrap(), &elem_vtx.as_slice().unwrap(),
-                &elsup.0, &elsup.1,
-                false);
-            mshline = delfem3::msh_topology_uniform::mshline_psup(&psup.0, &psup.1);
-        }
+        num_vtx: usize) -> &'a PyArray2<usize> {
+        let mshline = delfem3::msh_topology_mix::meshline_from_meshtriquad(
+            &elem_ind.as_slice().unwrap(), &elem_vtx.as_slice().unwrap(), num_vtx);
         numpy::ndarray::Array2::from_shape_vec(
             (mshline.len()/2,2), mshline).unwrap().into_pyarray(py)
     }
@@ -95,6 +78,20 @@ fn delfem3_python(_py: Python, m: &PyModule) -> PyResult<()> {
         nr: usize, nl: usize) -> (&PyArray2<f64>, &PyArray2<usize>) {
         let (vtx_xyz, tri_vtx) = delfem3::msh_primitive::cylinder_closed_end_tri3::<f64>(
             r, l, nr, nl);
+        let v = numpy::ndarray::Array2::from_shape_vec(
+            (vtx_xyz.len()/3,3), vtx_xyz).unwrap();
+        let f = numpy::ndarray::Array2::from_shape_vec(
+            (tri_vtx.len()/3,3), tri_vtx).unwrap();
+        (v.into_pyarray(py), f.into_pyarray(py))
+    }
+
+    #[pyfn(m)]
+    fn sphere_meshtri3(
+        py: Python,
+        r: f32,
+        nr: usize, nl: usize) -> (&PyArray2<f32>, &PyArray2<usize>) {
+        let (vtx_xyz, tri_vtx) = delfem3::msh_primitive::sphere_tri3(
+            r, nr, nl);
         let v = numpy::ndarray::Array2::from_shape_vec(
             (vtx_xyz.len()/3,3), vtx_xyz).unwrap();
         let f = numpy::ndarray::Array2::from_shape_vec(

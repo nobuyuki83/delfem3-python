@@ -26,6 +26,7 @@ if __name__ == "__main__":
     draw_mesh( *pydelfem3.torus_meshtri3(0.6, 0.3, 32, 32) )
     draw_mesh( *pydelfem3.capsule_meshtri3(0.1, 0.6, 32, 32, 32) )
     draw_mesh( *pydelfem3.cylinder_closed_end_meshtri3(0.1, 0.8, 32, 32) )
+    draw_mesh( *pydelfem3.sphere_meshtri3(1., 32, 32) )
 
 
 
