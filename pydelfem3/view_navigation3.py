@@ -1,4 +1,6 @@
 import math, numpy
+
+import pyrr
 from pyrr import Quaternion, Vector3, Matrix44
 
 
@@ -28,7 +30,7 @@ class ViewNavigation3:
         self.cursor_dx = self.cursor_x - x0
         self.cursor_dy = self.cursor_y - y0
 
-    def projection_matrix(self):
+    def projection_matrix(self) -> pyrr.Matrix44:
         asp = float(self.win_width) / float(self.win_height)
         mp = Matrix44(
             (1. / (self.view_height * asp), 0., 0., 0.,
@@ -38,7 +40,7 @@ class ViewNavigation3:
         ms = Matrix44.from_scale((self.scale, self.scale, self.scale))
         return ms * mp
 
-    def modelview_matrix(self):
+    def modelview_matrix(self) -> pyrr.Matrix44:
         mt = Matrix44.from_translation(self.translation)
         mr = Matrix44.from_quaternion(self.quat)
         return mt * mr
@@ -59,3 +61,11 @@ class ViewNavigation3:
         sy = (mp[3, 3] - mp[1, 3]) / mp[1, 1]
         self.translation[0] += sx * self.cursor_dx
         self.translation[1] += sy * self.cursor_dy
+
+    def picking_ray(self) -> (pyrr.Vector4, pyrr.Vector4):
+        mmv = self.modelview_matrix()
+        mp = self.projection_matrix()
+        mmvpi = (mp * mmv).inverse
+        q0 = mmvpi * pyrr.Vector4([self.cursor_x, self.cursor_y, +1., 1.])
+        q1 = mmvpi * pyrr.Vector4([self.cursor_x, self.cursor_y, -1., 1.])
+        return q0, q1 - q0

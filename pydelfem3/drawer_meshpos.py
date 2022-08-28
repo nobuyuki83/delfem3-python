@@ -16,6 +16,7 @@ class DrawerMesPos:
     def __init__(self, V:numpy.ndarray, element: typing.List[ElementInfo]):
         self.V = V
         self.element = element
+        self.vao_content = None
 
     def init_gl(self, ctx: moderngl.Context):
         self.prog = ctx.program(
@@ -39,14 +40,21 @@ class DrawerMesPos:
         self.uniform_mvp = self.prog['Mvp']
         self.uniform_color = self.prog['color']
 
-        vao_content = [
+        self.vao_content = [
             (ctx.buffer(self.V.tobytes()), '3f', 'in_position'),
         ]
+        del self.V
         for el in self.element:
             index_buffer = ctx.buffer(el.index.tobytes())
             el.vao = ctx.vertex_array(
-                self.prog, vao_content, index_buffer, 4
+                self.prog, self.vao_content, index_buffer, 4
             )
+            del el.index
+
+    def update_position(self, V: numpy.ndarray):
+        if self.vao_content != None:
+            vbo = self.vao_content[0][0]
+            vbo.write(V.tobytes())
 
     def paint_gl(self, mvp: Matrix44):
         self.uniform_mvp.value = tuple(mvp.flatten())

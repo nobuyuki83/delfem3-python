@@ -27,7 +27,7 @@ if __name__ == "__main__":
                 ElementInfo(index=E.astype(numpy.uint32), color=(0, 0, 0), mode=moderngl.LINES),
                 ElementInfo(index=T.astype(numpy.uint32), color=(1, 1, 1), mode=moderngl.TRIANGLES)]
         )
-        win = pydelfem3.qtglwidget_viewer3.QtGLWidget_Viewer3(drawer)
+        win = pydelfem3.qtglwidget_viewer3.QtGLWidget_Viewer3([drawer])
         win.show()
         app.exec()
 

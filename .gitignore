@@ -74,3 +74,4 @@ docs/_build/
 .env
 
 Cargo.lock
+private

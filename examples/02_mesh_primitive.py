@@ -17,7 +17,7 @@ def draw_mesh(V,F):
                 ElementInfo(index=F.astype(numpy.uint32), color=(1, 0, 0), mode=moderngl.TRIANGLES),
                 ElementInfo(index=E.astype(numpy.uint32), color=(0, 0, 0), mode=moderngl.LINES)]
         )
-        win = pydelfem3.qtglwidget_viewer3.QtGLWidget_Viewer3(drawer)
+        win = pydelfem3.qtglwidget_viewer3.QtGLWidget_Viewer3([drawer])
         win.show()
         app.exec()
 
