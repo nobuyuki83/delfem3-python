@@ -121,7 +121,7 @@ fn pydelfem3(_py: Python, m: &PyModule) -> PyResult<()> {
         src: PyReadonlyArray1<'a, f32>,
         dir: PyReadonlyArray1<'a, f32>,
         vtx_xyz: PyReadonlyArray2<'a, f32>,
-        tri_vtx: PyReadonlyArray2<'a, usize>) -> (&PyArray1<f32>, i64)
+        tri_vtx: PyReadonlyArray2<'a, usize>) -> (&'a PyArray1<f32>, i64)
     {
         use crate::delfem3::srch_bruteforce;
         let res = srch_bruteforce::intersection_meshtri3(
